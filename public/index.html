@@ -6,21 +6,54 @@
     <title>My friend:3</title>
 </head>
 <body>
-    <img src="images/friendsStock.jpg" width="600px" height="400px">
+    <img src="images/friendsStock.jpg" width="300px" height="200px">
     <h1>Friends</h1>
     <br>
-    <p>01/07/2025</p>
+    <p id="currentDate">01/07/2025</p>
     <h3>Add new friend</h3>
-    <form>
         <input type="text" name="name" id="name" placeholder="Name">
         <input type="email" name="email" id="email" placeholder="Email">
-        <input type="number" name="phone" id="phone" placeholder="phone">
+        <input type="number" name="phone" id="phone" placeholder="Phone">
         <input type="number" name="age" id="age" placeholder="Age">
-    </form>
+        <button id="add-btn">Add</button>
     <br>
     <h3>Serach</h3>
     <input type="email" name="" id="" placeholder="Email">
+    <button id="serach-btn">Search</button>
     <h3>Friends</h3>
-
+    <ul id="friends-list"></ul>
+<script>
+    fetch('/getCurrentDate')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('currentDate').innerText = data.currentDate;
+        });
+    document.getElementById('add-btn').addEventListener('click', () => {
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const age = document.getElementById('age').value;
+        fetch('/addFriend', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, email, phone, age})
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    alert('Friend added successfully');
+                    document.getElementById('name').value = '';
+                    document.getElementById('email').value = '';
+                    document.getElementById('phone').value = '';
+                    document.getElementById('age').value = '';
+                    document.getElementById('friends-list').innerHTML = JSON.stringify(data.friends);
+                } else {
+                    alert('Failed to add friend :(')
+                }
+            });
+    })
+</script>
 </body>
 </html>
